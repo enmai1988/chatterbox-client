@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     background: #eee;
     text-align: center;
@@ -59,18 +63,28 @@ form input[type=text] {
     padding: 5px;
 }
 
-.chat {
+#chats {
+    height: 500px;
+    width: auto;
     padding: 5px;
     margin-bottom: 5px;
     background-color: #eee;
+    overflow: scroll;
 }
 
-.chat .username {
+#chats .username {
     font-weight: 800;
 }
 
-.chat:hover {
+#chats:hover {
     background-color: #ddd;
+}
+
+#roomSelect {
+    height: 50px;
+    width: auto;
+    padding: 5px;
+    margin-bottom: 5px;
 }
 
 .spinner {
@@ -86,5 +100,41 @@ form input[type=text] {
 .friend {
     color: #fff;
     background-color: #0090da;
+}
+
+#message {
+    border: 1px solid #ccc;
+    border-right: 0;
+    float: left;
+    font-size: 14px;
+    height: 30px;
+    padding: 0 10px;
+    width: 80%;
+}
+
+#message:focus {
+    border-color: #0090da;
+    outline: none;
+}
+
+.submit {
+    background-color: #1494e1;
+    border: 0;
+    color: #fff;
+    display: block;
+    float: left;
+    line-height: 20px;
+    padding: 5px;
+    text-align: center;
+    text-transform: uppercase;
+    width: 20%;
+}
+.submit:hover{
+    cursor: pointer;
+    background-color: #108edb;
+}
+.username:hover{
+    cursor: pointer;
+    color: #1494e1;
 }
 
