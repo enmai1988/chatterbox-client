@@ -26,14 +26,18 @@
       <h1>chatterbox</h1>
 
       <div id="room">
-        Room<br>
-        <select id="roomSelect"></select>
+        Room
+        <select id="roomSelect">
+          <option>Select a room</option>
+        </select>
+        <input id="newRoom" type="text">
       </div>
+      <button class="refresh">Clear all messages</button>
 
-      <div id="send">
+      <form id="send" class="clearfix">
         <input id="message" type="text">
-        <button class="submit">send</button>
-      </div>
+        <input class="submit" type="submit">
+      </form>
       <div id="chats"></div>
 
     </div><!-- END #main -->

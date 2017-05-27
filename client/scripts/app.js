@@ -2,7 +2,8 @@ class App {
   constructor() {
     this.server = 'http://parse.sfm8.hackreactor.com/chatterbox/classes/messages';
     this.username = window.location.href.split('=')[1];
-    this.roomName = {};
+    this.roomname = {};
+    this.selectedRoom;
   }
   init() {
     this.fetch();
@@ -24,31 +25,41 @@ class App {
     });
   }
   fetch() {
-    $.get(this.server, data => {
-      var filteredData = data.results.filter(obj => obj.text);
-      filteredData.forEach(obj => {
-        this.renderMessage(obj);
-        this.roomName[obj.roomname] = 1;
-      });
-      for (var key in this.roomName) {
-        this.renderRoom(key);
-      }  
-       
+    $.ajax({
+      url: this.server,
+      type: 'GET',
+      contentType: 'application/json',
+      data: {limit: 500, order: '-createdAt'},
+      success: (data) => {
+        data.results.filter(obj => obj).forEach(obj => {
+          this.renderMessage(obj);
+          this.roomname[obj.roomname] = 1;
+        });
+        for (let key in this.roomname) {
+          this.renderRoomList(key);
+        } 
+      },
+      error: function (data) {
+        // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
+        console.error('Failed');
+      }
     });
-
+    // $.get(this.server, data => {
+    //   let filteredData = data.results.filter(obj => obj.text);
+    //   data.results.forEach(obj => {
+    //     this.renderMessage(obj);
+    //     this.roomname[obj.roomname] = 1;
+    //   });
+    //   for (let key in this.roomname) {
+    //     this.renderRoomList(key);
+    //   }  
+    // });
   }
   clearMessages() {
     $('#chats').html(' ');
   }
   renderMessage(obj) {
-    // var escapeRegExp = function (string) {
-    //   if (string) {
-    //     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    //   } else {
-    //     return '';
-    //   }
-    // }; 
-    var escapeRegExp = function (s) {
+    let escapeRegExp = function (s) {
       if (s) {
         return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
       } else {
@@ -56,8 +67,8 @@ class App {
       }
     };
 
-    var time = obj.createdAt;
-    var text =
+    let time = obj.createdAt;
+    let text =
     `<div class="comment">
       <div class="username">${escapeRegExp(obj.username)}</div>
       <div class="text">${escapeRegExp(obj.text)}</div>
@@ -66,9 +77,20 @@ class App {
 
     $('#chats').append(text);
   }
-  renderRoom(roomName) {
-    var room = `<option class="seletedRoom">${roomName}</option>`;
+  renderRoomList(roomName) {
+    let room = `<option class="seletedRoom">${roomName}</option>`;
     $('#roomSelect').append(room);
+  }
+  renderRoom(selection) {
+    $.get(this.server, data => {
+      let array = data.results;
+      if (selection !== 'Select a room') {
+        array = array.filter(obj => {
+          return obj.roomname === selection;
+        });
+      }
+      array.forEach(obj => this.renderMessage(obj));
+    });
   }
   handleUsernameClick() {
   }
@@ -76,8 +98,15 @@ class App {
     const message = {};
     message.username = this.username;
     message.text = $('#message').val();
+    message.roomname = $('#roomSelect').find('option:selected').val();
+    console.log(message.roomname);
     this.send(message);
     // this.renderMessage(message);
     $('#message').val('');
+  }
+  refreshRoom() {
+    var selected = $('#roomSelect').find('option:selected').val();
+    app.clearMessages();
+    app.renderRoom(selected);
   }
 }

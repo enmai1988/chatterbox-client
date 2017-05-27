@@ -4,9 +4,10 @@ $(document).ready(function() {
 
   app.init();
 
-  $('.submit').click(function() {
+  $('#send').submit(function(event) {
     app.handleSubmit();
-    app.fetch();
+    //setTimeout(app.fetch.bind(app), 2000);
+    event.preventDefault();
   });
 
   $('.username').click(function() {
@@ -14,10 +15,11 @@ $(document).ready(function() {
   });
     
   $('#roomSelect').change(function() {
-    var selected = $(this).find('option:selected');
-    var roomName = selected.val();
-    console.log(roomName);
-    //app.renderRoom(roomName);
+    app.refreshRoom();
+  });
+
+  $('.refresh').click(function() {
+    app.refreshRoom();
   });
 
 
