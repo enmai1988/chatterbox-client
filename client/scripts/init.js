@@ -6,12 +6,21 @@ $(document).ready(function() {
 
   $('#send').submit(function(event) {
     app.handleSubmit();
-    //setTimeout(app.fetch.bind(app), 2000);
     event.preventDefault();
   });
 
-  $('.username').click(function() {
-    $(this).trigger(app.handleUsernameClick());
+  $('#newRoom').submit(function(event) {
+    let message = {};
+    message.roomname = $('#newRoomInput').val();
+    app.send(message);
+    $(`#roomSelect option[value="${escapeRegExp(message.roomname)}"]`).attr('selected', 'selected');
+    app.clearMessages();
+    $('#newRoomInput').val(' ');
+    event.preventDefault();
+  });
+
+  $('#chats').click('.comment .username', function(event) {
+    app.handleUsernameClick(event.target);
   });
     
   $('#roomSelect').change(function() {
@@ -22,9 +31,4 @@ $(document).ready(function() {
     app.refreshRoom();
   });
 
-
-  // $( "input[type='text']" ).change(function() {
-  //   // Check input( $( this ).val() ) for validity here
-  // });
-  // setInterval(app.fetch, 1000);
 });

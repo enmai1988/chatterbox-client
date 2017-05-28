@@ -3,7 +3,6 @@ class App {
     this.server = 'http://parse.sfm8.hackreactor.com/chatterbox/classes/messages';
     this.username = window.location.href.split('=')[1];
     this.roomname = {};
-    this.selectedRoom;
   }
   init() {
     this.fetch();
@@ -29,7 +28,7 @@ class App {
       url: this.server,
       type: 'GET',
       contentType: 'application/json',
-      data: {limit: 500, order: '-createdAt'},
+      data: {limit: 1000, order: '-createdAt'},
       success: (data) => {
         data.results.filter(obj => obj).forEach(obj => {
           this.renderMessage(obj);
@@ -44,29 +43,11 @@ class App {
         console.error('Failed');
       }
     });
-    // $.get(this.server, data => {
-    //   let filteredData = data.results.filter(obj => obj.text);
-    //   data.results.forEach(obj => {
-    //     this.renderMessage(obj);
-    //     this.roomname[obj.roomname] = 1;
-    //   });
-    //   for (let key in this.roomname) {
-    //     this.renderRoomList(key);
-    //   }  
-    // });
   }
   clearMessages() {
     $('#chats').html(' ');
   }
   renderMessage(obj) {
-    let escapeRegExp = function (s) {
-      if (s) {
-        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
-      } else {
-        return '';
-      }
-    };
-
     let time = obj.createdAt;
     let text =
     `<div class="comment">
@@ -78,21 +59,34 @@ class App {
     $('#chats').append(text);
   }
   renderRoomList(roomName) {
-    let room = `<option class="seletedRoom">${roomName}</option>`;
+    let room = `<option class="seletedRoom" value="${escapeRegExp(roomName)}">${escapeRegExp(roomName)}</option>`;
     $('#roomSelect').append(room);
+    return room;
   }
   renderRoom(selection) {
-    $.get(this.server, data => {
-      let array = data.results;
-      if (selection !== 'Select a room') {
-        array = array.filter(obj => {
-          return obj.roomname === selection;
-        });
+    $.ajax({
+      url: this.server,
+      type: 'GET',
+      contentType: 'application/json',
+      data: {limit: 1000, order: '-createdAt'},
+      success: (data) => {
+        let array = data.results;
+        if (selection !== 'Select a room') {
+          array = array.filter(obj => {
+            return obj.roomname === selection;
+          });
+        }
+        array.forEach(obj => this.renderMessage(obj));
+      },
+      error: function (data) {
+        // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
+        console.error('Failed');
       }
-      array.forEach(obj => this.renderMessage(obj));
     });
   }
-  handleUsernameClick() {
+  handleUsernameClick(div) {
+    var text = $(div).text();
+    $(`.username:contains(${text})`).parent().toggleClass('friend');
   }
   handleSubmit() {
     const message = {};
@@ -110,3 +104,13 @@ class App {
     app.renderRoom(selected);
   }
 }
+
+let escapeRegExp = function (s) {
+  
+  if (s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+  } else {
+    return '';
+  }
+};
+

@@ -30,9 +30,14 @@
         <select id="roomSelect">
           <option>Select a room</option>
         </select>
-        <input id="newRoom" type="text">
+        <button class="refresh">Refresh</button>
+
+        <form id='newRoom' class="clearfix">        
+          <input id="newRoomInput" type="text">
+          <input id="newRoomSubmit" type="submit" value="Create">
+        </form>
+
       </div>
-      <button class="refresh">Clear all messages</button>
 
       <form id="send" class="clearfix">
         <input id="message" type="text">
